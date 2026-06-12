@@ -1,0 +1,1 @@
+0 * * * * /opt/backup_scripts/db_backup.sh >> /var/log/backup_gamenet.log 2>&1
