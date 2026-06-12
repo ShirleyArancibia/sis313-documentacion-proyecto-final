@@ -247,37 +247,43 @@ echo "[OK] Backup completado: $DB_NAME-$FECHA.sql.gz"
 
 ## 📸 VII. Capturas de Pantalla
 
-### VIP activa en VM1
-<!-- Agregar captura de: ip addr show | grep 192.168.0.200 -->
+### VIP activa en VM1 — Keepalived MASTER
 ![VIP activa](capturas/01-vip-activa.png)
 
-### Failover — VIP en VM2
-<!-- Agregar captura después de: sudo systemctl stop keepalived en VM1 -->
+### Failover — VIP migrada a VM2
 ![Failover](capturas/02-failover-vm2.png)
 
-### Dashboard Grafana
-<!-- Agregar captura del dashboard con métricas de las 5 VMs -->
-![Grafana](capturas/03-grafana-dashboard.png)
+### Dashboard Grafana — Métricas en tiempo real
+![Grafana](capturas/03-grafana.png)
 
-### Fail2ban bloqueando IP atacante
-<!-- Agregar captura de: sudo fail2ban-client status sshd -->
-![Fail2ban](capturas/04-fail2ban-ban.png)
+### Fail2ban — IP atacante bloqueada
+![Fail2ban](capturas/04-fail2ban.png)
 
-### MariaDB con datos reales
-<!-- Agregar captura de: SELECT * FROM db_gamenet.usuarios -->
+### MariaDB — Usuarios y partidas registradas
 ![MariaDB](capturas/05-mariadb-datos.png)
 
 ### Página del juego Snake
-<!-- Agregar captura del juego en el navegador -->
-![Snake Game](capturas/06-snake-juego.png)
+![Snake 1](capturas/06a-snake-juego.png)
+![Snake 2](capturas/06b-snake-juego.png)
+![Snake 3](capturas/06c-snake-juego.png)
 
-### Backup y cron configurado
-<!-- Agregar captura de: sudo ls -lh /var/backups/gamenet/db/ && sudo crontab -l -->
+### Backups automáticos y cron configurado
 ![Backups](capturas/07-backups.png)
 
-### UFW y SSH endurecido
-<!-- Agregar captura de: sudo ufw status verbose && grep Port /etc/ssh/sshd_config -->
-![Seguridad](capturas/08-seguridad.png)
+### UFW activo y SSH endurecido
+![UFW SSH](capturas/08-ufw-ssh.png)
+
+### PM2 online — VM3 app1
+![PM2 VM3](capturas/09a-pm2-vm3.png)
+
+### PM2 online — VM4 app2
+![PM2 VM4](capturas/09b-pm2-vm4.png)
+
+### curl ranking — Flujo completo funcionando
+![Ranking](capturas/10-curl-ranking.png)
+
+### Prometheus — 5 VMs con health up
+![Prometheus](capturas/11-prometheus.png)
 
 ---
 
