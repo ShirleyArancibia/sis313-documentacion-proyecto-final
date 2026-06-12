@@ -248,10 +248,10 @@ echo "[OK] Backup completado: $DB_NAME-$FECHA.sql.gz"
 ## 📸 VII. Capturas de Pantalla
 
 ### VIP activa en VM1 — Keepalived MASTER
-![VIP activa](capturas/01-vip-activa.png)
+![VIP activa](capturas/01-vip-activa.jpeg)
 
 ### Failover — VIP migrada a VM2
-![Failover](capturas/02-failover-vm2.png)
+![Failover](capturas/02-failover-vm2.jpeg)
 
 ### Dashboard Grafana — Métricas en tiempo real
 ![Grafana](capturas/03-grafana.png)
