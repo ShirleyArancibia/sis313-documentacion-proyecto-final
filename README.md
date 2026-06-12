@@ -11,7 +11,7 @@
 | Nombre Completo | Rol en el Proyecto | Contacto GitHub |
 |---|---|---|
 | Arancibia Morales Shirley Celene | Capa de Datos y Monitoreo: MariaDB, Prometheus, Grafana, Fail2ban, Backups, Node.js + PM2 | [@ShirleyArancibia](https://github.com/ShirleyArancibia) |
-| Arce Vargas Jose Enrique | Capa de Red y Alta Disponibilidad: Keepalived, NGINX, Balanceo de Carga, Página web del juego | — |
+| Arce Vargas Jose Enrique | Capa de Red y Alta Disponibilidad: Keepalived, NGINX, Balanceo de Carga, Página web del juego | [@JARTARu](https://github.com/JARTARu) | |
 
 ---
 
