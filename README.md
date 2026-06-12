@@ -1,102 +1,304 @@
-# 🚀 Proyecto Final SIS313: [Título del Proyecto]
+# 🎮 Proyecto Final SIS313: GameNet HA
 
-> **Asignatura:** SIS313: Infraestructura, Plataformas Tecnológicas y Redes<br>
-> **Semestre:** 1/2026<br>
+> **Asignatura:** SIS313: Infraestructura, Plataformas Tecnológicas y Redes
+> **Semestre:** 1/2026
 > **Docente:** Ing. Marcelo Quispe Ortega
 
-## 👥 Miembros del Equipo ([Número o denominación del grupo])
+---
 
-| Nombre Completo | Rol en el Proyecto | Contacto (GitHub/Email) |
-| :--- | :--- | :--- |
-| [Nombre y Apellido 1] | [Rol Principal: Ej. Arquitecto de Seguridad] | [Usuario de GitHub] |
-| [Nombre y Apellido 2] | [Rol Principal: Ej. Ingeniero de Automatización] | [Usuario de GitHub] |
-| [Nombre y Apellido 3] | [Rol Principal: Ej. Administrador de Sistemas] | [Usuario de GitHub] |
-| [Nombre y Apellido 4] | [Rol Opcional] | [Usuario de GitHub] |
+## 👥 Miembros del Equipo 9 - GameNet HA
+
+| Nombre Completo | Rol en el Proyecto | Contacto GitHub |
+|---|---|---|
+| Arancibia Morales Shirley Celene | Capa de Datos y Monitoreo: MariaDB, Prometheus, Grafana, Fail2ban, Backups, Node.js + PM2 | [@ShirleyArancibia](https://github.com/ShirleyArancibia) |
+| Arce Vargas Jose Enrique | Capa de Red y Alta Disponibilidad: Keepalived, NGINX, Balanceo de Carga, Página web del juego | — |
+
+---
 
 ## 🎯 I. Objetivo del Proyecto
 
-Describe el objetivo de manera puntual, debe ser específica y medible, tal como se define en el banco de proyectos o tal como lo plantean como proyecto.
+> **Objetivo:** Diseñar e implementar una infraestructura de servidor backend de alta disponibilidad para una plataforma de juegos multijugador online, integrando balanceo de carga con persistencia de sesión mediante IP hash, gestión centralizada de puntuaciones en MariaDB, monitoreo en tiempo real de jugadores y recursos del sistema a través de Prometheus y Grafana, protección activa contra intrusiones y escaneos de puertos con Fail2ban, y un sistema automatizado de respaldo horario de partidas; garantizando la continuidad del servicio ante fallos de nodo y la seguridad e integridad de los datos de juego en todo momento.
 
-> **Objetivo:** [Indicar el objetivo del proyecto, ej: "Diseñar y configurar un clúster de Base de Datos con replicación Maestro-Esclavo para optimizar el rendimiento y la tolerancia a fallos."]
+---
 
 ## 💡 II. Justificación e Importancia
 
-Explica por qué este proyecto es relevante para una infraestructura universitaria o empresarial. Menciona los problemas de la continuidad operacional (T1) o la seguridad (T5) que resuelve.
+> **Justificación:** En una plataforma de juegos multijugador online, la disponibilidad continua del servicio es crítica. Si el servidor principal falla, todos los jugadores conectados perderían su sesión y progreso. Este proyecto resuelve ese problema implementando Alta Disponibilidad (T3) mediante Keepalived con una IP Virtual flotante, eliminando el Single Point of Failure en la capa de balanceo. Adicionalmente, se implementa balanceo de carga con persistencia de sesión (T4) para distribuir el tráfico sin interrumpir las sesiones activas, seguridad activa con Fail2ban (T13) para proteger contra ataques automatizados, y respaldos horarios automatizados (T15) para garantizar la recuperación de datos ante cualquier fallo. El proyecto demuestra cómo una infraestructura universitaria puede alcanzar estándares de producción real con herramientas open source.
 
-> **Justificación:** [Explicar la justificación, ej: "El proyecto elimina el Single Point of Failure en la BD, aplicando conceptos de Alta Disponibilidad (T2) y mejorando la capacidad de respuesta de aplicaciones con muchas consultas de lectura."]
+---
 
 ## 🛠️ III. Tecnologías y Conceptos Implementados
 
 ### 3.1. Tecnologías Clave
 
-Enumera y describe brevemente el rol de cada software y tecnología utilizada.
+- **Keepalived:** Implementación de VRRP en esquema activo-pasivo entre VM1 y VM2. Gestiona la IP Virtual 192.168.0.200 que migra automáticamente al nodo de respaldo en caso de fallo del maestro.
+- **NGINX:** Proxy inverso y balanceador de carga con algoritmo ip_hash para garantizar persistencia de sesión. Distribuye el tráfico entre VM3 (app1) y VM4 (app2).
+- **Node.js + PM2:** Servidores de aplicación del juego. Node.js procesa las peticiones (registro, login, ranking, partidas). PM2 garantiza el reinicio automático y la persistencia del servicio.
+- **MariaDB:** Base de datos centralizada en VM5. Almacena usuarios, partidas Snake y puntuaciones. Accesible remotamente solo desde las IPs de VM3 y VM4.
+- **Prometheus + Grafana:** Monitoreo en tiempo real. Node Exporter expone métricas en cada VM. Prometheus las recolecta cada 15 segundos. Grafana las visualiza en dashboards interactivos.
+- **Fail2ban:** Detección y bloqueo automático de IPs que realizan ataques de fuerza bruta o escaneos de puertos. Configurado para monitorear el puerto SSH 2222.
+- **Bash + cron + mysqldump:** Script de backup horario automatizado con compresión gzip, rotación de copias antiguas (7 días) y verificación de integridad.
+- **bcrypt + JWT:** Seguridad de autenticación. bcrypt encripta las contraseñas con hash irreversible. JWT genera tokens de sesión con expiración de 2 horas.
+- **Ubuntu Server 24.04 LTS + VirtualBox:** Sistema operativo base para las 5 VMs. Adaptador puente (bridge) para conectividad entre PCs distintas en la misma red.
 
-* **[Tecnología 1, ej: Nginx]:** [Función específica: Proxy Inverso y Balanceo de Carga con Rate Limiting.]
-* **[Tecnología 2, ej: MariaDB]:** [Función específica: Servidor de Base de Datos principal con replicación.]
-* **[Tecnología 3, ej: Keepalived]:** [Función específica: Implementación de VRRP para Failover de la IP Virtual (HA).]
-* **[Tecnología 4, ej: Ansible/Bash]:** [Función específica: Automatización del despliegue y la configuración de hardening.]
-* **[Tecnología 5, ej: Prometheus/Grafana]:** [Función específica: Monitoreo y visualización de métricas de rendimiento/tráfico.]
+### 3.2. Conceptos de la Asignatura Puestos en Práctica
 
-### 3.2. Conceptos de la Asignatura Puestos en Práctica (T1 - T6)
+- ✅ **Alta Disponibilidad (T3):** Keepalived con VRRP en unicast entre VM1 (MASTER, prioridad 100) y VM2 (BACKUP, prioridad 90). VIP 192.168.0.200 migra automáticamente en 1-2 segundos ante fallo del maestro.
+- ✅ **Proxy Inverso y Balanceo de Carga (T4):** NGINX con upstream ip_hash apuntando a VM3:3000 y VM4:3000. Garantiza que el mismo jugador siempre llega al mismo servidor de aplicación.
+- ✅ **Aplicación Desplegada (T8):** API REST en Node.js con endpoints de registro, login, ranking y partidas. Gestionada con PM2 en modo producción con auto-reinicio.
+- ✅ **Base de Datos Centralizada (T9):** MariaDB en VM5 con 3 tablas: `usuarios` (nametag único + contraseña encriptada), `partidas_snake` (historial de partidas) y `puntuaciones` (ranking general). Acceso restringido por IP.
+- ✅ **Monitoreo Integral (T10):** Prometheus recolecta métricas de las 5 VMs vía Node Exporter (puerto 9100). Grafana con dashboard ID 1860 muestra CPU, RAM, disco y red en tiempo real.
+- ✅ **Detección de Intrusiones (T13):** Fail2ban monitorea intentos fallidos de SSH. Tras 3 intentos en 10 minutos, banea la IP por 10 minutos. Demostrado con ataque Nmap y fuerza bruta desde VM4.
+- ✅ **Backups Automatizados (T15):** Script `db_backup.sh` ejecutado por cron cada hora. Usa `mysqldump --databases` para incluir `CREATE DATABASE`. Rotación automática de copias mayores a 7 días.
 
-Marca con un ✅ los temas avanzados de la asignatura que fueron implementados:
-
-* **Alta Disponibilidad (T2) y Tolerancia a Fallos:** [Describir cómo: Ej. Replicación DB y uso de Keepalived para failover.]
-* **Seguridad y Hardening (T5):** [Describir cómo: Ej. Uso de Firewall (UFW), Hardening SSH, Certificados SSL/TLS.]
-* **Automatización y Gestión (T6):** [Describir cómo: Ej. Scripts de Backup (DRP) o Playbooks de Ansible para la configuración.]
-* **Balanceo de Carga/Proxy (T3/T4):** [Describir cómo: Ej. Nginx/HAProxy para distribución de tráfico y health checks.]
-* **Monitoreo (T4/T1):** [Describir cómo: Ej. Uso de Prometheus/Grafana para métricas en tiempo real.]
-* **Networking Avanzado (T3):** [Describir cómo: Ej. Implementación de VLANs o Enrutamiento Estático.]
+---
 
 ## 🌐 IV. Diseño de la Infraestructura y Topología
 
-### 4.1. Diseño Esquemático
+### 4.1. Diagrama de Arquitectura
 
-Incluye un diagrama de la topología final. Muestra claramente la segmentación de red, las IPs utilizadas, y los flujos de tráfico.
+```
+                    [ Jugadores ]
+                          |
+                 VIP: 192.168.0.200
+                          |
+          ┌───────────────┴───────────────┐
+          │                               │
+   [VM1 - lb1]                    [VM2 - lb2]
+   192.168.0.120                  192.168.0.122
+   NGINX + Keepalived             NGINX + Keepalived
+   MASTER                         BACKUP
+          │                               │
+          └───────────────┬───────────────┘
+                          │  ip_hash
+               ┌──────────┴──────────┐
+               │                     │
+        [VM3 - app1]          [VM4 - app2]
+        192.168.0.113         192.168.0.114
+        Node.js + PM2         Node.js + PM2
+               │                     │
+               └──────────┬──────────┘
+                          │
+                   [VM5 - db]
+                  192.168.0.111
+          MariaDB + Prometheus + Grafana
+                + Fail2ban + Backups
+```
 
-> 
-| VM/Host | Rol | IP Física | IP Virtual (si aplica) | Red Lógica | SO |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **VM-LB-M** | Proxy / Load Balancer MASTER | 192.168.10.2 | 192.168.10.1 (VIP) | Red 10 | Ubuntu 22.04 |
-| **VM-DB-M** | Base de Datos (Maestro) | 192.168.20.2 | N/A | Red 20 | Debian 12 |
-| **VM-DB-S** | Base de Datos (Esclavo) | 192.168.20.3 | N/A | Red 20 | Debian 12 |
-| **VM-MON** | Monitoreo (Grafana/Prometheus) | 192.168.10.3 | N/A | Red 10 | Ubuntu 22.04 |
+### 4.2. Tabla de Infraestructura
 
-### 4.2. Estrategia Adoptada (Opcional)
+| VM | Hostname | Rol | IP Física | IP Virtual | SO |
+|---|---|---|---|---|---|
+| VM1 | vm1-lb1 | Balanceador Maestro | 192.168.0.120 | 192.168.0.200 (VIP) | Ubuntu 24.04 LTS |
+| VM2 | vm2-lb2 | Balanceador Respaldo | 192.168.0.122 | — | Ubuntu 24.04 LTS |
+| VM3 | app1 | Servidor Aplicación 1 | 192.168.0.113 | — | Ubuntu 24.04 LTS |
+| VM4 | app2 | Servidor Aplicación 2 | 192.168.0.114 | — | Ubuntu 24.04 LTS |
+| VM5 | db | BD + Monitoreo + Seguridad | 192.168.0.111 | — | Ubuntu 24.04 LTS |
 
-Describe la estrategia de diseño y las decisiones críticas.
+### 4.3. Estrategia Adoptada
 
-* **Estrategia de Replicación:** [Ej. Se optó por la replicación asíncrona de MariaDB debido a la menor latencia, priorizando la separación de lectura/escritura con ProxySQL.]
-* **Estrategia de Hardening:** [Ej. Se aplicaron los estándares CIS de hardening mediante un playbook de Ansible para la automatización de la seguridad inicial.]
+- **Red:** Adaptador puente (bridge) en todas las VMs para permitir conectividad entre dos PCs distintas en la misma red WiFi.
+- **Alta Disponibilidad:** Se usó unicast en lugar de multicast en Keepalived porque el router del laboratorio bloquea el tráfico multicast entre dispositivos.
+- **Persistencia de sesión:** ip_hash en lugar de least_conn porque el juego requiere que el jugador siempre llegue al mismo servidor para mantener su estado de sesión.
+- **Seguridad de autenticación:** JWT con expiración de 2 horas y bcrypt con 10 rondas de sal para las contraseñas.
+
+---
 
 ## 📋 V. Guía de Implementación y Puesta en Marcha
 
-Documenta los pasos esenciales para que cualquier persona pueda replicar el proyecto (instalación, configuración de ficheros clave, comandos).
-
 ### 5.1. Pre-requisitos
-* [Ej. 4 VMs con Ubuntu 22.04 y acceso root/sudo.]
-* [Ej. Repositorio git clonado en cada VM.]
 
-### 5.2. Despliegue (Ejecución de la Automatización)
-1.  **Instalación:** Instalar Ansible en la máquina de control.
-2.  **Configuración:** Editar el archivo de inventario (`hosts.ini`) con las IPs.
-3.  **Ejecución:** Ejecutar el playbook principal: `ansible-playbook setup.yml`.
+- 5 VMs con Ubuntu Server 24.04 LTS en VirtualBox con adaptador puente
+- Todas las VMs en la misma red con IPs estáticas configuradas via Netplan
+- Acceso SSH desde terminal (Warp) con puerto 2222
+- Conexión a internet para instalación de paquetes
+
+### 5.2. Flujo de Petición
+
+```
+Jugador → VIP 192.168.0.200 → NGINX (ip_hash) → app1 o app2 :3000 → MariaDB :3306
+```
 
 ### 5.3. Ficheros de Configuración Clave
-* `/etc/ansible/playbooks/db_cluster.yml`: Playbook para la replicación y ProxySQL.
-* `/etc/nginx/sites-available/proxy.conf`: Configuración del Balanceador y Hardening TLS.
-* `/etc/keepalived/keepalived.conf`: Configuración del Failover (MASTER/BACKUP).
 
-**Incluir además los archivos de configuración y software a utilizar dentro del proyecto y organizados en carpetas.**
+**VM1 y VM2 — NGINX** `/etc/nginx/sites-available/default`:
+```nginx
+upstream gamenet_backend {
+    ip_hash;
+    server 192.168.0.113:3000;
+    server 192.168.0.114:3000;
+}
+server {
+    listen 80;
+    server_name _;
+    root /var/www/gamenet;
+    index index.html;
+    location / { try_files $uri $uri/ /index.html; }
+    location /api/ {
+        proxy_pass http://gamenet_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+**VM1 — Keepalived MASTER** `/etc/keepalived/keepalived.conf`:
+```
+vrrp_instance VI_GAMENET {
+    state MASTER
+    interface enp0s3
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    unicast_src_ip 192.168.0.120
+    unicast_peer { 192.168.0.122 }
+    authentication { auth_type PASS auth_pass gamenet2026 }
+    virtual_ipaddress { 192.168.0.200/24 }
+}
+```
+
+**VM2 — Keepalived BACKUP** `/etc/keepalived/keepalived.conf`:
+```
+vrrp_instance VI_GAMENET {
+    state BACKUP
+    interface enp0s3
+    virtual_router_id 51
+    priority 90
+    advert_int 1
+    unicast_src_ip 192.168.0.122
+    unicast_peer { 192.168.0.120 }
+    authentication { auth_type PASS auth_pass gamenet2026 }
+    virtual_ipaddress { 192.168.0.200/24 }
+}
+```
+
+**VM3 y VM4 — Variables de entorno** `~/gamenet/.env`:
+```
+PORT=3000
+SERVER_ID=app1        # app2 en VM4
+DB_HOST=192.168.0.111
+DB_USER=usr_gamenet
+DB_PASSWORD=Gamenet2026!
+DB_NAME=db_gamenet
+```
+
+**VM5 — Prometheus targets** `/etc/prometheus/prometheus.yml`:
+```yaml
+scrape_configs:
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets:
+          - '192.168.0.111:9100'
+          - '192.168.0.113:9100'
+          - '192.168.0.114:9100'
+          - '192.168.0.120:9100'
+          - '192.168.0.122:9100'
+```
+
+**VM5 — Fail2ban** `/etc/fail2ban/jail.local`:
+```ini
+[DEFAULT]
+bantime  = 600
+findtime = 600
+maxretry = 3
+backend  = systemd
+
+[sshd]
+enabled  = true
+port     = 2222
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 3
+```
+
+**VM5 — Script backup** `/opt/backup_scripts/db_backup.sh`:
+```bash
+#!/bin/bash
+DB_NAME="db_gamenet"
+BACKUP_DIR="/var/backups/gamenet/db"
+FECHA=$(date +%Y%m%d_%H%M)
+mkdir -p "$BACKUP_DIR"
+mysqldump -u root -pGamenet2026! --databases "$DB_NAME" \
+    | gzip > "$BACKUP_DIR/$DB_NAME-$FECHA.sql.gz"
+find "$BACKUP_DIR" -name "*.sql.gz" -mtime +7 -delete
+echo "[OK] Backup completado: $DB_NAME-$FECHA.sql.gz"
+```
+
+**VM5 — Crontab** `sudo crontab -e`:
+```
+0 * * * * /opt/backup_scripts/db_backup.sh >> /var/log/backup_gamenet.log 2>&1
+```
+
+---
 
 ## ⚠️ VI. Pruebas y Validación
 
 | Prueba Realizada | Resultado Esperado | Resultado Obtenido |
-| :--- | :--- | :--- |
-| Test de Failover de la BD (Apagar Maestro) | El esclavo debe tomar las escrituras o el servicio debe seguir activo. | [OK/FALLIDO] |
-| Prueba de Carga/Estrés (Balanceo) | El tráfico se distribuye equitativamente entre los servidores de aplicación. | [OK/FALLIDO] |
-| Test de Seguridad (SSL/Firewall) | El acceso HTTP debe redirigirse a HTTPS y el Firewall debe bloquear todos los puertos excepto 443. | [OK/FALLIDO] |
+|---|---|---|
+| Failover Keepalived (detener VM1) | VIP migra a VM2 en menos de 2 segundos. Servicio continúa. | ✅ OK |
+| Balanceo ip_hash (peticiones desde distintas IPs) | Misma IP siempre llega al mismo servidor (app1 o app2) | ✅ OK |
+| Dashboard Grafana (métricas en tiempo real) | Las 5 VMs muestran CPU, RAM y disco en Grafana | ✅ OK |
+| Ataque Nmap + fuerza bruta Hydra | Fail2ban banea la IP atacante tras 3 intentos fallidos | ✅ OK |
+| Restauración de BD desde backup | BD recuperada desde .sql.gz en menos de 5 segundos (RTO < 1 min) | ✅ OK |
+| Registro de usuario con nametag único | Sistema rechaza nametag duplicado con error 409 | ✅ OK |
+| Juego Snake guarda puntuación en BD | Partida registrada en tabla partidas_snake con usuario y puntuación | ✅ OK |
 
-## 📚 VII. Conclusiones y Lecciones Aprendidas
+---
 
-[Resumen de los principales logros y desafíos técnicos superados. ¿Qué harían diferente?]
+## 📸 VII. Capturas de Pantalla
+
+### VIP activa en VM1
+<!-- Agregar captura de: ip addr show | grep 192.168.0.200 -->
+![VIP activa](capturas/01-vip-activa.png)
+
+### Failover — VIP en VM2
+<!-- Agregar captura después de: sudo systemctl stop keepalived en VM1 -->
+![Failover](capturas/02-failover-vm2.png)
+
+### Dashboard Grafana
+<!-- Agregar captura del dashboard con métricas de las 5 VMs -->
+![Grafana](capturas/03-grafana-dashboard.png)
+
+### Fail2ban bloqueando IP atacante
+<!-- Agregar captura de: sudo fail2ban-client status sshd -->
+![Fail2ban](capturas/04-fail2ban-ban.png)
+
+### MariaDB con datos reales
+<!-- Agregar captura de: SELECT * FROM db_gamenet.usuarios -->
+![MariaDB](capturas/05-mariadb-datos.png)
+
+### Página del juego Snake
+<!-- Agregar captura del juego en el navegador -->
+![Snake Game](capturas/06-snake-juego.png)
+
+### Backup y cron configurado
+<!-- Agregar captura de: sudo ls -lh /var/backups/gamenet/db/ && sudo crontab -l -->
+![Backups](capturas/07-backups.png)
+
+### UFW y SSH endurecido
+<!-- Agregar captura de: sudo ufw status verbose && grep Port /etc/ssh/sshd_config -->
+![Seguridad](capturas/08-seguridad.png)
+
+---
+
+## 📚 VIII. Conclusiones y Lecciones Aprendidas
+
+El proyecto GameNet HA demostró exitosamente la implementación de una infraestructura backend de alta disponibilidad para un servidor de juegos multijugador online, integrando 7 de los temas avanzados de la asignatura.
+
+**Logros principales:**
+- Se implementó failover automático en menos de 2 segundos mediante Keepalived con unicast, superando el problema del bloqueo de multicast en la red del laboratorio.
+- La persistencia de sesión con ip_hash garantiza que los jugadores no pierdan su estado de juego durante el balanceo de carga.
+- El sistema de autenticación con bcrypt y JWT proporciona seguridad real comparable a aplicaciones de producción.
+- Fail2ban demostró protección activa bloqueando automáticamente ataques de fuerza bruta.
+- El RTO de restauración de base de datos fue menor a 5 segundos.
+
+**Desafíos superados:**
+- Configuración de Keepalived con unicast en lugar de multicast por restricciones de la red del laboratorio.
+- Gestión de IPs dinámicas al cambiar de red, resuelta mediante configuración estática con Netplan.
+- Integración de CORS en Node.js para permitir peticiones del juego web al backend.
+
+**Qué mejoraríamos:**
+- Implementar replicación de MariaDB para eliminar el punto único de fallo en la capa de datos.
+- Agregar certificados TLS/SSL para cifrar el tráfico HTTP.
+- Implementar alertas automáticas en Grafana cuando el CPU supere el 80%.
+- Dockerizar la aplicación Node.js para facilitar el despliegue.
